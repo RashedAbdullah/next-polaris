@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --p-text-field-border-color: #f87171; /* Customize border color */
+  --p-button-primary-background: #34d399; /* Customize button background */
+}
