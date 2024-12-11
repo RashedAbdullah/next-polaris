@@ -8,38 +8,27 @@ import {
   TextField,
   Layout,
   RangeSlider,
-  ColorPicker,
   BlockStack,
   InlineStack,
 } from "@shopify/polaris";
-import { useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 const HomePage = () => {
   const [placeholder, setPlaceholder] = useState("Discount Code");
-  const [buttonLabel, setButtonLabel] = useState("Apply button text");
+  const [buttonLabel, setButtonLabel] = useState("Apply");
   const [inputBorderRadius, setInputBorderRadius] = useState(0);
   const [buttonBorderRadius, setButtonBorderRadius] = useState(0);
-  const [buttonBgColor, setButtonBgColor] = useState({
-    hue: 0,
-    brightness: 0,
-    saturation: 0,
-  });
+  const [fontColor, setFontColor] = useState("#000000");
+  const [buttonBgColor, setButtonBgColor] = useState("#007BFF");
+  const [buttonTextColor, setButtonTextColor] = useState("#FFFFFF");
+  const [isClient, setIsClient] = useState(false);
 
-  const [buttonColor, setButtonColor] = useState({
-    hue: 0,
-    brightness: 1,
-    saturation: 0,
-  });
+  // Ensure client-side rendering to avoid hydration issues
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  const handleInputBorderRadiusChange = useCallback(
-    (value) => setInputBorderRadius(value),
-    []
-  );
-
-  const handleButtonBorderRadiusChange = useCallback(
-    (value) => setButtonBorderRadius(value),
-    []
-  );
+  if (!isClient) return null; // Prevent server-rendered mismatch
 
   return (
     <AppProvider i18n={{}}>
@@ -50,50 +39,72 @@ const HomePage = () => {
         }}
       >
         <Layout>
+          {/* Control Panel Section */}
           <Layout.Section>
             <Card sectioned>
               <BlockStack vertical spacing="loose">
+                {/* Input Placeholder */}
                 <TextField
                   label="Placeholder"
                   value={placeholder}
                   onChange={(value) => setPlaceholder(value)}
                 />
 
+                {/* Input Border Radius */}
                 <div>
                   <p>Input Border Radius</p>
                   <RangeSlider
                     value={inputBorderRadius}
-                    onChange={handleInputBorderRadiusChange}
+                    onChange={setInputBorderRadius}
                     min={0}
                     max={20}
                     output
                   />
                 </div>
 
+                {/* Button Label */}
                 <TextField
                   label="Button Label"
                   value={buttonLabel}
                   onChange={(value) => setButtonLabel(value)}
                 />
 
+                {/* Font Color Picker */}
                 <div>
-                  <p>Button Background Color</p>
-                  <ColorPicker
-                    onChange={setButtonBgColor}
-                    color={buttonBgColor}
+                  <label>Font Color:</label>
+                  <input
+                    type="color"
+                    value={fontColor}
+                    onChange={(e) => setFontColor(e.target.value)}
                   />
                 </div>
 
+                {/* Button Background Color Picker */}
                 <div>
-                  <p>Button Text Color</p>
-                  <ColorPicker onChange={setButtonColor} color={buttonColor} />
+                  <label>Button Background Color:</label>
+                  <input
+                    type="color"
+                    value={buttonBgColor}
+                    onChange={(e) => setButtonBgColor(e.target.value)}
+                  />
                 </div>
 
+                {/* Button Text Color Picker */}
+                <div>
+                  <label>Button Text Color:</label>
+                  <input
+                    type="color"
+                    value={buttonTextColor}
+                    onChange={(e) => setButtonTextColor(e.target.value)}
+                  />
+                </div>
+
+                {/* Button Border Radius */}
                 <div>
                   <p>Button Border Radius</p>
                   <RangeSlider
                     value={buttonBorderRadius}
-                    onChange={handleButtonBorderRadiusChange}
+                    onChange={setButtonBorderRadius}
                     min={0}
                     max={20}
                     output
@@ -103,16 +114,33 @@ const HomePage = () => {
             </Card>
           </Layout.Section>
 
+          {/* Preview Section */}
           <Layout.Section>
             <Card sectioned>
               <InlineStack vertical spacing="loose">
+                {/* Input Preview */}
                 <TextField
                   label="Discount Code"
                   value={placeholder}
                   placeholder={placeholder}
+                  style={{
+                    borderRadius: `${inputBorderRadius}px`,
+                  }}
                 />
-                <Button variant="primary">{buttonLabel}</Button>
 
+                {/* Button Preview */}
+                <Button
+                  style={{
+                    backgroundColor: buttonBgColor,
+                    color: buttonTextColor,
+                    borderRadius: `${buttonBorderRadius}px`,
+                  }}
+                  fullWidth
+                >
+                  {buttonLabel}
+                </Button>
+
+                {/* Summary */}
                 <div>
                   <p>Discount: -50$</p>
                   <p>Total: 100$</p>
